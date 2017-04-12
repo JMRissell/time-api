@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	<!--meta -->
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *" /> -->
+ 	<!-- css -->
+    <link href="css/index.css"  rel="stylesheet" type="text/css"/>
+ 	<!-- bootstrap -->
+    <link href="css/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+
+    <title>Display</title>
+</head>
+
+<body>
+      <div id="timer"></div>
+      <div id="result"></div>
+      <button type="button" id="start">start</button>
+      <button type="button" id="pause">pause</button>
+      <button type="button" id="resume">resume</button>
+      <button type="button" id="stop">stop</button><br>
+      <button type="button" id="getJson">getJson</button>
+
+
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+  <script src="js/timer.js"></script>
+
+
+  <script>
+    var timerData;
+
+    $('#start').click(function() {
+      $('#timer').timer('start');
+    });
+    
+    $('#pause').click(function() {
+      $('#timer').timer('pause');
+    });
+    
+    $('#resume').click(function() {
+      $('#timer').timer('resume');
+    });
+    
+    $('#stop').click(function() {
+      $('#timer').timer('remove');
+      timerData = $('#timer').data('seconds');
+   
+
+     $.ajax({           
+          type: 'POST',
+          url: 'http://localhost:8080/greeting',
+          data: JSON.stringify({
+            userTime: timerData
+          }),
+
+          headers: {
+            'Accept': 'application/json',
+             'Content-Type': 'application/json'
+          },
+        'dataType': 'json'
+	      }).done(function(data, status) { 
+	            $('#timer').text('');
+	      });
+	 });
+ 
+	$('#getJson').click(function() { 
+		$.getJSON( "http://localhost:8080/greeting", function( json ) {
+      $.each(json, function() {
+        $.each(this, function(k, v) {
+        $('#result').html('<p/>' + v.userTime);
+        });
+      });
+		  console.log( "JSON Data: " + json[0].userTime );
+		 });
+	 });
+ 
+  </script>
+
+</body>
+
+</html>
